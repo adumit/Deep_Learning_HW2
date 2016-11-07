@@ -80,7 +80,7 @@ def variable_summaries(var, name):
     tf.histogram_summary(name, var)
 
 
-ntrain = 100 # per class
+ntrain = 1000 # per class
 ntest = 100 # per class
 nclass =  10 # number of classes
 imsize = 28
@@ -189,7 +189,7 @@ saver = tf.train.Saver()
 summary_writer = tf.train.SummaryWriter(result_dir, sess.graph)
 
 for i in range(10000): # try a small iteration size once it works then continue
-    perm = np.arange(batchsize)
+    perm = np.arange(ntrain*nclass)
     np.random.shuffle(perm)
     for j in range(batchsize):
         batch_xs[j,:,:,:] = Train[perm[j],:,:,:]
@@ -208,7 +208,7 @@ for i in range(10000): # try a small iteration size once it works then continue
     if i%100 == 0:
         checkpoint_file = os.path.join(result_dir, 'checkpoint')
         saver.save(sess, checkpoint_file, global_step=i)
-        summary_str = sess.run(summary_op, feed_dict={tf_data: batch[0], tf_labels: batch[1], keep_prob: 0.5})
+        summary_str = sess.run(summary_op, feed_dict={tf_data: batch_xs, tf_labels: batch_ys, keep_prob: 0.5})
         summary_writer.add_summary(summary_str, i)
         summary_writer.flush()
 
