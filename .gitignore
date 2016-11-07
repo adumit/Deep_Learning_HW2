@@ -1,2 +1,4 @@
 .idea/*
 CIFAR10
+.DS_Store
+results
