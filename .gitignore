@@ -2,3 +2,8 @@
 CIFAR10
 .DS_Store
 results
+MNIST_data
+.idea/
+MNIST_data/
+train_and_test_errors.txt
+recurrentNN_errors.txt
