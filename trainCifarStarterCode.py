@@ -8,6 +8,7 @@ mil.use('TkAgg')
 import matplotlib.pyplot as plt
 import sys
 import time
+from random import randint
 
 # --------------------------------------------------
 # setup
@@ -329,12 +330,43 @@ if __name__ == "__main__":
             while True:
                 class_to_viz = input("Which test class would you like to visualize? (0 to 9)")
                 image_to_viz = input("Favorite number for 0 to 99?")
-                image_to_use = "/CIFAR10/Test/" + str(class_to_viz) + "/Image000" + str(image_to_viz) + ".png"
-                im = misc.imread(path); # 28 by 28
+                image_to_use = "./CIFAR10/Test/" + str(class_to_viz) + "/Image000" + str(image_to_viz) + ".png"
+                im = misc.imread(image_to_use) # 28 by 28
                 im = im.astype(float)/255
                 print("Here's the image...")
                 plt.imshow(np.reshape(im,[28,28]), interpolation="nearest", cmap = plt.get_cmap('gray'))
                 plt.show()
                 print("Here are the activation filters from the first layer...")
                 getActivations(W_conv1, im, True)
+
+        elif what_to_do == "vTest" or what_to_do == "vtest":
+            check_for_load_model()
+            class_to_viz = input("Which test class would you like to visualize? (0 to 9)")
+            for c in range(0, 10):
+                sum_activations = np.zeros(shape=[1, 28, 28, 32])
+                images = []
+                for i in range(30):
+                    rand_img_num = randint(10, 99)
+                    image_to_use = "./CIFAR10/Test/" + str(c) + "/Image000" + str(rand_img_num) + ".png"
+                    im = misc.imread(image_to_use)
+                    im = im.astype(float) / 255
+                    images.append(im)
+                    sum_activations += (h_conv1.eval(session=sess, feed_dict={
+                        tf_data: np.reshape(im, [1, 28, 28, 1], order='F'),
+                        keep_prob: 1.0, is_training: False}))
+                # Show the 10 images
+                plt.figure(11, figsize=(30, 30))
+                for i in range(10):
+                    plt.subplot(2, 5, i + 1)
+                    plt.imshow(np.reshape(images[i],[28,28]), cmap = plt.get_cmap('gray'))
+
+                filters = 32
+                # Show the 32 activations
+                # plt.figure(1, figsize=(30, 30))
+                for i in range(0, filters):
+                    plt.subplot(7, 6, i + 1)
+                    plt.imshow(np.divide(sum_activations[0, :, :, i], np.array([30] * (28*28)).reshape([28, 28])),
+                               cmap=plt.get_cmap('gray'))
+                plt.show()
+
 
